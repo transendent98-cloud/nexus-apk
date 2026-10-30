@@ -7,15 +7,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Build with Official Kivy Docker
+        uses: addnab/docker-run-action@v3
         with:
-          command: buildozer android debug
-          buildozer_version: stable
-          
+          image: kivy/buildozer:latest
+          options: -v ${{ github.workspace }}:/home/user/app -w /home/user/app
+          run: |
+            buildozer android debug
+            
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Nexus-APK
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
