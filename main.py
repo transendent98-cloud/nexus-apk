@@ -4,13 +4,13 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from kivy.utils import platform
-from kivy.core.window import Window
 import socket
 import threading
 
-# Permissions for Android
+# Android specific imports
 if platform == 'android':
     from android.permissions import request_permissions, Permission
+    from android.runnable import run_on_ui_thread
     from jnius import autoclass
 
 class SplashScreen(Screen):
@@ -47,7 +47,14 @@ class SplashScreen(Screen):
 
     def go_to_app(self, ip, port):
         if platform == 'android':
-            # Android WebView Intent (Opens directly without kivy_garden)
+            self.lbl.text = f"Connected: {ip}:{port}\n(Opening Browser...)"
+            self.open_browser(ip, port)
+        else:
+            self.lbl.text = f"Connected: {ip}:{port}\n(WebView not supported on PC)"
+
+    @run_on_ui_thread
+    def open_browser(self, ip, port):
+        try:
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             Intent = autoclass('android.content.Intent')
             Uri = autoclass('android.net.Uri')
@@ -59,11 +66,9 @@ class SplashScreen(Screen):
             
             current_activity = PythonActivity.mActivity
             current_activity.startActivity(intent)
-            
-            # App ko background mein bhej do (kyunki browser khul gaya hai)
             current_activity.moveTaskToBack(True)
-        else:
-            self.lbl.text = f"Connected: {ip}:{port}\n(WebView not supported on PC)"
+        except Exception as e:
+            self.lbl.text = f"Error: {str(e)}"
 
     def show_error(self, msg):
         self.lbl.text = msg
