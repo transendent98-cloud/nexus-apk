@@ -1,4 +1,3 @@
-
 [app]
 title = Nexus Mobile
 package.name = nexusmobile
@@ -6,9 +5,14 @@ package.domain = org.nexus
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
-requirements = python3,kivy,kivy_garden.webview,pyjnius,android
+requirements = python3,kivy==2.3.0,pyjnius,android,https://github.com/kivy-garden/webview/archive/refs/heads/master.zip
 orientation = portrait
 fullscreen = 1
+android.permissions = INTERNET, ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE, CAMERA
+android.api = 33
+android.minapi = 21
+android.ndk = 25b
+android.archs = arm64-v8a, armeabi-v7a
 
 [buildozer]
 log_level = 2
